@@ -16,6 +16,7 @@ Ref: https://www.coursera.org/learn/reproducible-research/peer/gYyPt/course-proj
 rm(list=ls(all=TRUE))
 setwd("C:/TInvention/DataScience/DS5-ReproducibileResearch/RepData_PeerAssessment1")
 library(dplyr)
+library(ggplot2)
 ```
 
 ## Loading and preprocessing the data
@@ -23,8 +24,8 @@ Load the data (i.e. read.csv())
 Process/transform the data (if necessary) into a format suitable for your analysis
 ```{r}
 data <- read.table("activity.csv", header = T,sep=',')
+data <- mutate(data, date=as.Date(date))
 cleanData <- filter(data, !is.na(steps))
-cleanData <- mutate(cleanData, date=as.Date(date))
 ```
 
 Histogram of the total number of steps taken each day
@@ -50,7 +51,7 @@ Make a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and 
 ```{r}
 cleanData5min <- group_by(cleanData,interval)
 infoBy5Min <- summarize(cleanData5min,steps=mean(steps))
-with(infoBy5Min,plot(interval,steps,type="l", main="Average activity during day"))
+qplot(interval,steps,data=infoBy5Min,main="Average activity during day", geom="line")
 ```
 
 Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
@@ -100,4 +101,24 @@ median(infoByDay$totSteps)
 Mean and median are similar, now much more observations fall in middle segment
 
 ## Are there differences in activity patterns between weekdays and weekends?
+
+For this part the weekdays() function may be of some help here. Use the dataset with the filled-in missing values for this part.
+
+Create a new factor variable in the dataset with two levels – “weekday” and “weekend” indicating whether a given date is a weekday or weekend day.
+```{r}
+#use of wday instead of weekday to avoid locale problems
+newData <- newData  %>% 
+    mutate(dayType=ifelse(as.POSIXlt(date)$wday %in% c(0,6),"weekend","weekday")) %>%
+    mutate(dayType=as.factor(dayType))
+
+```
+
+Make a panel plot containing a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis). See the README file in the GitHub repository to see an example of what this plot should look like using simulated data.
+```{r}
+#use of wday instead of weekday to avoid locale problems
+newData5Min <- group_by(newData,dayType,interval)
+infoBy5Min <- summarize(newData5Min,steps=mean(steps))
+qplot(interval,steps,data=infoBy5Min,main="Average activity during day", geom="line", facets=dayType~.)
+
+```
 
