@@ -1,0 +1,54 @@
+---
+title: "Reproducible Research: Peer Assessment 1"
+author: "Cesare Mauri"
+date: "28 gennaio 2016"
+output: 
+  html_document:
+    keep_md: true
+---
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+Prepare context
+```{r echo=FALSE}
+rm(list=ls(all=TRUE))
+setwd("C:/TInvention/DataScience/DS5-ReproducibileResearch/reproducible-researchA1")
+library(dplyr)
+library(ggplot2)
+```
+
+## Loading and preprocessing the data
+```{r}
+data <- read.table("activity.csv", header = T,sep=',')
+hData <- filter(data, !is.na(steps))
+hDataDaily <- group_by(hData,date)
+```
+
+Histogram of the total number of steps taken each day
+```{r}
+
+sumByDay <- summarize(hDataDaily,totSteps=sum(steps))
+qplot(x=date, y=totSteps, data = sumByDay) + geom_bar(stat="identity")
+```
+
+
+## What is mean total number of steps taken per day?
+```{r}
+summarize(hDataDaily,meanSteps=mean(steps))
+ms <- summarize(hDataDaily,medianSteps=median(steps))
+
+
+```
+
+## What is the average daily activity pattern?
+
+
+
+## Imputing missing values
+
+
+
+## Are there differences in activity patterns between weekdays and weekends?
+
